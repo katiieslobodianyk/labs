@@ -22,4 +22,4 @@ jobs:
     - name: Create database schema
       run: python init_db.py
     - name: Run tests
-      run: pytest test_lab6.py -v
+      run: pytest lab6_test.py -v
