@@ -11,73 +11,15 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v4
-
+    - uses: actions/checkout@v4
     - name: Set up Python
       uses: actions/setup-python@v5
       with:
         python-version: '3.12'
-
     - name: Install dependencies
       run: |
-        python -m pip install --upgrade pip
         pip install pydantic pytest
-
-    - name: Create database schema (if needed)
-      run: |
-        python -c "
-import sqlite3
-conn = sqlite3.connect('lab3_blockchain.db')
-conn.execute('''
-    CREATE TABLE IF NOT EXISTS BLOCKS (
-        hexString TEXT PRIMARY KEY,
-        id INTEGER,
-        view INTEGER,
-        desc TEXT,
-        img BLOB,
-        votes INTEGER
-    );
-''')
-conn.execute('''
-    CREATE TABLE IF NOT EXISTS SOURCES (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        ip_addr TEXT,
-        country_code TEXT
-    );
-''')
-conn.execute('''
-    CREATE TABLE IF NOT EXISTS PERSONS (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        name TEXT,
-        addr TEXT
-    );
-''')
-conn.execute('''
-    CREATE TABLE IF NOT EXISTS VOTES (
-        block_id TEXT,
-        voter_id INTEGER,
-        timestamp DATETIME,
-        source_id INTEGER,
-        PRIMARY KEY (block_id, voter_id),
-        FOREIGN KEY (block_id) REFERENCES BLOCKS(hexString) ON DELETE CASCADE,
-        FOREIGN KEY (voter_id) REFERENCES PERSONS(id) ON DELETE CASCADE,
-        FOREIGN KEY (source_id) REFERENCES SOURCES(id) ON DELETE SET NULL
-    );
-''')
-conn.execute('''
-    CREATE TABLE IF NOT EXISTS event_stream (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        type TEXT,
-        entity_id TEXT,
-        processed BOOLEAN DEFAULT 0,
-        created_at TEXT DEFAULT CURRENT_TIMESTAMP
-    );
-''')
-conn.commit()
-conn.close()
-print('Database initialized')
-"
-
+    - name: Create database schema
+      run: python init_db.py
     - name: Run tests
       run: pytest test_lab6.py -v
