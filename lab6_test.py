@@ -45,5 +45,5 @@ def test_invalid_vote_negative_voter_id():
         Vote(block_id="0x123", voter_id=-1, timestamp=datetime.now(), source_id=1)
 
 def test_1():
-    with pytest.raises(ValidationError):
-        Block(id=1, view=0)
+    s = Source(id=1, country_code='PL')
+    assert s.id == 2
