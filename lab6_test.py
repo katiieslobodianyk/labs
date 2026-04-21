@@ -43,3 +43,7 @@ def test_valid_vote():
 def test_invalid_vote_negative_voter_id():
     with pytest.raises(ValidationError):
         Vote(block_id="0x123", voter_id=-1, timestamp=datetime.now(), source_id=1)
+
+def test_1():
+    with pytest.raises(ValidationError):
+        Block(id=1, view=0)
