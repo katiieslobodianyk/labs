@@ -1,0 +1,272 @@
+[
+  {
+    "objectID": "presentation.html#лабораторна-робота-9-opencv",
+    "href": "presentation.html#лабораторна-робота-9-opencv",
+    "title": "Огляд лабораторних робіт 9-11",
+    "section": "Лабораторна робота №9: OpenCV",
+    "text": "Лабораторна робота №9: OpenCV\nОбробка зображень: розмиття та підвищення різкості.\nkernel = np.array([[0,-1,0],[-1,5,-1],[0,-1,0]])\nsharp = cv2.filter2D(img, -1, kernel)",
+    "crumbs": [
+      "Огляд лабораторних робіт 9-11"
+    ]
+  },
+  {
+    "objectID": "presentation.html#лабораторна-робота-10-паралелізм",
+    "href": "presentation.html#лабораторна-робота-10-паралелізм",
+    "title": "Огляд лабораторних робіт 9-11",
+    "section": "Лабораторна робота №10: Паралелізм",
+    "text": "Лабораторна робота №10: Паралелізм\nПорівняння threading та multiprocessing для CPU-задач.\n\n\n\n\n\nflowchart LR\n    A[Послідовно] --&gt; B[Потоки]\n    A --&gt; C[Процеси]\n    B --&gt; D[GIL блокує]\n    C --&gt; E[Реальне прискорення]",
+    "crumbs": [
+      "Огляд лабораторних робіт 9-11"
+    ]
+  },
+  {
+    "objectID": "presentation.html#лабораторна-робота-11-мережеве-програмування",
+    "href": "presentation.html#лабораторна-робота-11-мережеве-програмування",
+    "title": "Огляд лабораторних робіт 9-11",
+    "section": "Лабораторна робота №11: Мережеве програмування",
+    "text": "Лабораторна робота №11: Мережеве програмування\nTCP-сокети, JSON-запити, fetch та bw_image.\n\n\n\n\n\nsequenceDiagram\n    Client-&gt;&gt;Server: JSON запит\n    Server--&gt;&gt;Client: JSON відповідь",
+    "crumbs": [
+      "Огляд лабораторних робіт 9-11"
+    ]
+  },
+  {
+    "objectID": "presentation.html#лабораторна-робота-12-duckdb-великі-дані-wikipedia",
+    "href": "presentation.html#лабораторна-робота-12-duckdb-великі-дані-wikipedia",
+    "title": "Огляд лабораторних робіт 9-11",
+    "section": "Лабораторна робота №12: DuckDB + великі дані Wikipedia",
+    "text": "Лабораторна робота №12: DuckDB + великі дані Wikipedia\nМета\nІнтегрувати DuckDB у серверну частину для аналізу великих даних Wikipedia (перегляди сторінок).\nКонвертація даних\nВхідний BZ2-файл (дані переглядів Wikipedia) перетворюється у формат Parquet з фільтрацією англійських статей.\nimport duckdb, bz2, shutil\n\ndef ingest(bz2_path, parquet_path):\n    csv_path = bz2_path.replace('.bz2', '.csv')\n    with bz2.open(bz2_path, 'rb') as f_in, open(csv_path, 'wb') as f_out:\n        shutil.copyfileobj(f_in, f_out)\n    con = duckdb.connect()\n    con.sql(f\"\"\"\n        COPY (\n            SELECT wiki_code, article_title, view_count, hourly_encoded\n            FROM read_csv('{csv_path}', delim=' ', header=false,\n                columns={{'wiki_code':'VARCHAR','article_title':'VARCHAR',\n                          'page_id':'VARCHAR','agent_type':'VARCHAR',\n                          'view_count':'INTEGER','hourly_encoded':'VARCHAR'}})\n            WHERE wiki_code IN ('en.wikipedia','en.wikipedia.m')\n              AND article_title NOT LIKE 'Special:%'\n        ) TO '{parquet_path}' (FORMAT PARQUET)\n    \"\"\")\n    os.remove(csv_path)",
+    "crumbs": [
+      "Огляд лабораторних робіт 9-11"
+    ]
+  },
+  {
+    "objectID": "presentation.html#sql-запити-через-duckdb",
+    "href": "presentation.html#sql-запити-через-duckdb",
+    "title": "Огляд лабораторних робіт 9-11",
+    "section": "SQL-запити через DuckDB",
+    "text": "SQL-запити через DuckDB\nSELECT article_title, view_count\nFROM pageviews\nORDER BY view_count DESC\nLIMIT 10;",
+    "crumbs": [
+      "Огляд лабораторних робіт 9-11"
+    ]
+  },
+  {
+    "objectID": "presentation.html#лабораторна-робота-13-fastapi-заміна-сокетів-на-http",
+    "href": "presentation.html#лабораторна-робота-13-fastapi-заміна-сокетів-на-http",
+    "title": "Огляд лабораторних робіт 9-11",
+    "section": "Лабораторна робота №13: FastAPI (заміна сокетів на HTTP)",
+    "text": "Лабораторна робота №13: FastAPI (заміна сокетів на HTTP)",
+    "crumbs": [
+      "Огляд лабораторних робіт 9-11"
+    ]
+  },
+  {
+    "objectID": "presentation.html#мета-1",
+    "href": "presentation.html#мета-1",
+    "title": "Огляд лабораторних робіт 9-11",
+    "section": "Мета",
+    "text": "Мета\nЗамінити TCP-сокетний сервер на FastAPI для реалізації REST API.",
+    "crumbs": [
+      "Огляд лабораторних робіт 9-11"
+    ]
+  },
+  {
+    "objectID": "presentation.html#ендпоінти",
+    "href": "presentation.html#ендпоінти",
+    "title": "Огляд лабораторних робіт 9-11",
+    "section": "Ендпоінти",
+    "text": "Ендпоінти\n\nPOST /fetch – отримання заголовків та рядків за regex.\nPOST /bw-image – чорно-біле зображення.\nGET /stats/top – топ статей (DuckDB).\nGET /stats/agents – розподіл за агентами.\nGET /stats/hourly – погодинна статистика.\n\n\n\n\n\n\nsequenceDiagram\n    participant Client\n    participant FastAPI\n    participant DuckDB\n    Client-&gt;&gt;FastAPI: GET /stats/top?limit=10\n    FastAPI-&gt;&gt;DuckDB: SQL запит\n    DuckDB--&gt;&gt;FastAPI: результат\n    FastAPI--&gt;&gt;Client: JSON",
+    "crumbs": [
+      "Огляд лабораторних робіт 9-11"
+    ]
+  },
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "Про мене",
+    "section": "",
+    "text": "Моє фото\n\n\nКатерина Слободяник\nСтудентка групи МТС-22.\nЦей сайт містить результати моїх лабораторних робіт.\n\nКонтакти\n\nEmail: kateryna.slobodianyk@lnu.edu.ua\n\nGitHub: github.com/katiieslobodianyk",
+    "crumbs": [
+      "Про мене"
+    ]
+  },
+  {
+    "objectID": "labs.html",
+    "href": "labs.html",
+    "title": "Лабораторні роботи №9–13",
+    "section": "",
+    "text": "Реалізувати розмиття (blur) та підвищення різкості (sharpen) зображення.\n\n\n\nimport cv2\nimport numpy as np\n\nimg = cv2.imread('input.jpg')\nkernel = np.array([[0, -1, 0],\n                   [-1, 5, -1],\n                   [0, -1, 0]])\nsharp = cv2.filter2D(img, -1, kernel)\ncv2.imwrite('sharpened.jpg', sharp)",
+    "crumbs": [
+      "Лабораторні роботи №9–13"
+    ]
+  },
+  {
+    "objectID": "labs.html#лабораторна-робота-9-opencv-обробка-зображень",
+    "href": "labs.html#лабораторна-робота-9-opencv-обробка-зображень",
+    "title": "Лабораторні роботи №9–13",
+    "section": "",
+    "text": "Реалізувати розмиття (blur) та підвищення різкості (sharpen) зображення.\n\n\n\nimport cv2\nimport numpy as np\n\nimg = cv2.imread('input.jpg')\nkernel = np.array([[0, -1, 0],\n                   [-1, 5, -1],\n                   [0, -1, 0]])\nsharp = cv2.filter2D(img, -1, kernel)\ncv2.imwrite('sharpened.jpg', sharp)",
+    "crumbs": [
+      "Лабораторні роботи №9–13"
+    ]
+  },
+  {
+    "objectID": "labs.html#лабораторна-робота-10-паралелізм-threading-vs-multiprocessing",
+    "href": "labs.html#лабораторна-робота-10-паралелізм-threading-vs-multiprocessing",
+    "title": "Лабораторні роботи №9–13",
+    "section": "Лабораторна робота №10: Паралелізм (threading vs multiprocessing)",
+    "text": "Лабораторна робота №10: Паралелізм (threading vs multiprocessing)",
+    "crumbs": [
+      "Лабораторні роботи №9–13"
+    ]
+  },
+  {
+    "objectID": "labs.html#мета",
+    "href": "labs.html#мета",
+    "title": "Лабораторні роботи №9–13",
+    "section": "Мета",
+    "text": "Мета\nПорівняти продуктивність послідовної, багатопотокової та багатопроцесорної обробки зображень.",
+    "crumbs": [
+      "Лабораторні роботи №9–13"
+    ]
+  },
+  {
+    "objectID": "labs.html#теоретичні-відомості",
+    "href": "labs.html#теоретичні-відомості",
+    "title": "Лабораторні роботи №9–13",
+    "section": "Теоретичні відомості",
+    "text": "Теоретичні відомості\nПотоки (threading) в Python обмежені GIL (Global Interpreter Lock), тому для CPU-інтенсивних задач вони не дають прискорення. Процеси (multiprocessing) створюють окремі інтерпретатори з власним GIL, що дозволяє реально використовувати кілька ядер процесора.",
+    "crumbs": [
+      "Лабораторні роботи №9–13"
+    ]
+  },
+  {
+    "objectID": "labs.html#висновки",
+    "href": "labs.html#висновки",
+    "title": "Лабораторні роботи №9–13",
+    "section": "Висновки",
+    "text": "Висновки\n\nПотоки не прискорюють обчислювальні задачі через GIL.\nПроцеси дають прискорення, пропорційне кількості ядер.\nДля I/O-задач потоки можуть бути ефективними через менші накладні витрати.\n\n\n\n\n\n\nflowchart TD\n    A[CPU-задача] --&gt; B{Підхід}\n    B --&gt; C[Потоки]\n    B --&gt; D[Процеси]\n    C --&gt; E[GIL обмежує]\n    E --&gt; F[Час ≈ послідовний]\n    D --&gt; G[Окремий GIL на процес]\n    G --&gt; H[Прискорення на ядрах]",
+    "crumbs": [
+      "Лабораторні роботи №9–13"
+    ]
+  },
+  {
+    "objectID": "labs.html#приклад-коду",
+    "href": "labs.html#приклад-коду",
+    "title": "Лабораторні роботи №9–13",
+    "section": "Приклад коду",
+    "text": "Приклад коду\nfrom multiprocessing import Pool\n\ndef process_image(path):\n    img = cv2.imread(path)\n    # обробка...\n\nwith Pool(4) as pool:\n    pool.map(process_image, image_paths)",
+    "crumbs": [
+      "Лабораторні роботи №9–13"
+    ]
+  },
+  {
+    "objectID": "labs.html#мета-1",
+    "href": "labs.html#мета-1",
+    "title": "Лабораторні роботи №9–13",
+    "section": "Мета",
+    "text": "Мета\nРеалізувати клієнт-серверну взаємодію через TCP-сокети з обміном JSON-запитами.",
+    "crumbs": [
+      "Лабораторні роботи №9–13"
+    ]
+  },
+  {
+    "objectID": "labs.html#опис-роботи",
+    "href": "labs.html#опис-роботи",
+    "title": "Лабораторні роботи №9–13",
+    "section": "Опис роботи",
+    "text": "Опис роботи\nСервер очікує з’єднання на порту 25002, приймає JSON-запити двох типів: fetch (завантаження веб-сторінки з поверненням заголовків та рядків за регулярним виразом) та bw_image (завантаження зображення, перетворення на чорно-біле та відправка байтів). Клієнт надсилає запити та виводить відповідь (для fetch – JSON, для bw_image – зберігає зображення).",
+    "crumbs": [
+      "Лабораторні роботи №9–13"
+    ]
+  },
+  {
+    "objectID": "labs.html#основні-технології",
+    "href": "labs.html#основні-технології",
+    "title": "Лабораторні роботи №9–13",
+    "section": "Основні технології",
+    "text": "Основні технології\n\nСокети (socket)\nСеріалізація JSON\nHTTP-запити через requests\nОбробка зображень (OpenCV)",
+    "crumbs": [
+      "Лабораторні роботи №9–13"
+    ]
+  },
+  {
+    "objectID": "labs.html#висновки-1",
+    "href": "labs.html#висновки-1",
+    "title": "Лабораторні роботи №9–13",
+    "section": "Висновки",
+    "text": "Висновки\nСтворено робочу клієнт-серверну систему, яка демонструє базові принципи мережевого програмування, обмін структурованими даними та передачу бінарних файлів.\n\n\n\n\n\nsequenceDiagram\n    participant Client\n    participant Server\n    Client-&gt;&gt;Server: {\"action\":\"fetch\",\"url\":\"...\",\"regex\":\"...\"}\n    Server--&gt;&gt;Client: {\"headers\":{...},\"matched_lines\":[...]}\n    Client-&gt;&gt;Server: {\"action\":\"bw_image\",\"url\":\"...\"}\n    Server--&gt;&gt;Client: (байти JPEG)",
+    "crumbs": [
+      "Лабораторні роботи №9–13"
+    ]
+  },
+  {
+    "objectID": "labs.html#лабораторна-робота-12-duckdb-великі-дані-wikipedia",
+    "href": "labs.html#лабораторна-робота-12-duckdb-великі-дані-wikipedia",
+    "title": "Лабораторні роботи №9–13",
+    "section": "Лабораторна робота №12: DuckDB + великі дані Wikipedia",
+    "text": "Лабораторна робота №12: DuckDB + великі дані Wikipedia\n\nМета\nІнтегрувати DuckDB у серверну частину для аналізу великих даних Wikipedia (перегляди сторінок).\n\n\nКонвертація даних\nВхідний BZ2-файл (дані переглядів Wikipedia) перетворюється у формат Parquet з фільтрацією англійських статей.\nimport duckdb, bz2, shutil\n\ndef ingest(bz2_path, parquet_path):\n    csv_path = bz2_path.replace('.bz2', '.csv')\n    with bz2.open(bz2_path, 'rb') as f_in, open(csv_path, 'wb') as f_out:\n        shutil.copyfileobj(f_in, f_out)\n    con = duckdb.connect()\n    con.sql(f\"\"\"\n        COPY (\n            SELECT wiki_code, article_title, view_count, hourly_encoded\n            FROM read_csv('{csv_path}', delim=' ', header=false,\n                columns={{'wiki_code':'VARCHAR','article_title':'VARCHAR',\n                          'page_id':'VARCHAR','agent_type':'VARCHAR',\n                          'view_count':'INTEGER','hourly_encoded':'VARCHAR'}})\n            WHERE wiki_code IN ('en.wikipedia','en.wikipedia.m')\n              AND article_title NOT LIKE 'Special:%'\n        ) TO '{parquet_path}' (FORMAT PARQUET)\n    \"\"\")\n    os.remove(csv_path)",
+    "crumbs": [
+      "Лабораторні роботи №9–13"
+    ]
+  },
+  {
+    "objectID": "labs.html#sql-запити-через-duckdb",
+    "href": "labs.html#sql-запити-через-duckdb",
+    "title": "Лабораторні роботи №9–13",
+    "section": "SQL-запити через DuckDB",
+    "text": "SQL-запити через DuckDB\nSELECT article_title, view_count\nFROM pageviews\nORDER BY view_count DESC\nLIMIT 10;",
+    "crumbs": [
+      "Лабораторні роботи №9–13"
+    ]
+  },
+  {
+    "objectID": "labs.html#аналітичні-функції",
+    "href": "labs.html#аналітичні-функції",
+    "title": "Лабораторні роботи №9–13",
+    "section": "Аналітичні функції",
+    "text": "Аналітичні функції\n\nТоп статей за переглядами\nРозподіл переглядів за типом агента (desktop, mobile-web, mobile-app)\nПогодинна статистика (з використанням STRPTIME)\n\n\n\n\n\n\nflowchart LR\n    A[BZ2 файл] --&gt;|ingest.py| B[Parquet]\n    B --&gt;|DuckDB| C[SQL запити]\n    C --&gt; D[TCP сервер]\n    D --&gt; E[Клієнт]",
+    "crumbs": [
+      "Лабораторні роботи №9–13"
+    ]
+  },
+  {
+    "objectID": "labs.html#лабораторна-робота-13-fastapi-заміна-сокетів-на-http",
+    "href": "labs.html#лабораторна-робота-13-fastapi-заміна-сокетів-на-http",
+    "title": "Лабораторні роботи №9–13",
+    "section": "Лабораторна робота №13: FastAPI (заміна сокетів на HTTP)",
+    "text": "Лабораторна робота №13: FastAPI (заміна сокетів на HTTP)",
+    "crumbs": [
+      "Лабораторні роботи №9–13"
+    ]
+  },
+  {
+    "objectID": "labs.html#мета-3",
+    "href": "labs.html#мета-3",
+    "title": "Лабораторні роботи №9–13",
+    "section": "Мета",
+    "text": "Мета\nЗамінити TCP-сокетний сервер на FastAPI для реалізації REST API.",
+    "crumbs": [
+      "Лабораторні роботи №9–13"
+    ]
+  },
+  {
+    "objectID": "labs.html#ендпоінти",
+    "href": "labs.html#ендпоінти",
+    "title": "Лабораторні роботи №9–13",
+    "section": "Ендпоінти",
+    "text": "Ендпоінти\n\nPOST /fetch – отримання заголовків та рядків за regex.\nPOST /bw-image – чорно-біле зображення.\nGET /stats/top – топ статей (DuckDB).\nGET /stats/agents – розподіл за агентами.\nGET /stats/hourly – погодинна статистика.\n\n\n\n\n\n\nsequenceDiagram\n    participant Client\n    participant FastAPI\n    participant DuckDB\n    Client-&gt;&gt;FastAPI: GET /stats/top?limit=10\n    FastAPI-&gt;&gt;DuckDB: SQL запит\n    DuckDB--&gt;&gt;FastAPI: результат\n    FastAPI--&gt;&gt;Client: JSON\n\n\n\n\n\n\nПриклад клієнта на requests\nimport requests\nresp = requests.get(\"http://localhost:8000/stats/top\", params={\"limit\": 5})\nprint(resp.json())",
+    "crumbs": [
+      "Лабораторні роботи №9–13"
+    ]
+  },
+  {
+    "objectID": "labs.html#переваги-fastapi",
+    "href": "labs.html#переваги-fastapi",
+    "title": "Лабораторні роботи №9–13",
+    "section": "Переваги FastAPI",
+    "text": "Переваги FastAPI\n\nАвтоматична документація (/docs)\nАсинхронність\nВалідація через Pydantic",
+    "crumbs": [
+      "Лабораторні роботи №9–13"
+    ]
+  }
+]
